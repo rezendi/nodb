@@ -1,0 +1,14 @@
+.DS_Store
+/node_modules/
+/src/node_modules/@sapper/
+yarn-error.log
+/__sapper__/
+.vscode
+todo.txt
+.env
+.firebase.json
+sessions
+cypress/videos
+cypress/screenshots
+cypress/integration/examples
+cypress/fixtures/examples
