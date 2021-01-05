@@ -7,7 +7,7 @@ export async function get(req, res, next) {
 	});
 	let owner = process.env.GITHUB_ACCOUNT;
 	let repo = process.env.GITHUB_REPO;
-	let path = `${process.env.GITHUB_PATH}`;
+	let path = params.path;
 
 	let response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
         method: 'GET',

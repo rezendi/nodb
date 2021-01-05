@@ -191,11 +191,11 @@
 				<Overlay closeOnClickOutside>
 					<button slot="parent" class="defaultButton" let:toggle on:click={toggle}>My &#x25BC;</button>
 					<div slot="content" class="loginButtons" let:close>
-						<button on:click={goToMy}>Examples</button>
+						<button on:click={goToMy}>NoDB</button>
 						<button class="defaultButton" on:click={logout}>Logout</button>
 					</div>
 				</Overlay>
-				<button id="new_line" class="defaultButton" on:click={newLine}>New</button>
+				<button id="new_line" class="defaultButton" on:click={goToMy}>New</button>
 			{:else}
 				<Overlay closeOnClickOutside>
 					<button slot="parent" class="defaultButton" let:toggle on:click={toggle}>Login &#x25BC;</button>
@@ -204,9 +204,6 @@
 						<button on:click={loginWithGitHub}>GitHub</button>
 					</div>
 				</Overlay>
-				{#if $session.test_mode}
-				<button id="login_test" on:click={loginTestMode}>login_test</button>
-				{/if}
 			{/if}
 		</li>
 	</ul>

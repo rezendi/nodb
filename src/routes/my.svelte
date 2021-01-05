@@ -44,7 +44,7 @@
 		await firebase.auth().currentUser.unlink(provider.providerId);
 		firebase.auth().currentUser.reload();
 		let response =  await fetch('/linkUser.json', {
-				method: 'DELETE',
+			method: 'DELETE',
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({site})
 		});
@@ -53,8 +53,27 @@
 		firebase.auth().signOut();
 		location.href = "/";
     }
-    
-	let lines = [];
+	
+	let title, text;
+	async function save() {
+		let response =  await fetch('/save.json', {
+			method: 'POST',
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({title:title,text:text})
+		});
+		console.log("save", response);
+		title = '';
+		text = '';
+	}
+
+	let examples = [];
+	async function getExamples() {
+		let response = await fetch('/all.json');
+		let json = await response.json();
+		examples = json.examples;
+
+	}
+
     let identities = [];
     import { onMount } from 'svelte';
     onMount(async () => {
@@ -62,10 +81,8 @@
 			return location.href = "/";
 		}
 		identities = $session.sUser.identities || [];
+		getExamples();
 		// console.log("identities", identities);
-		let response = await fetch('/lines/all/my.json');
-		let json = await response.json();
-		lines = json.lines;
 	});
 </script>
 
@@ -96,8 +113,19 @@
 {/if}
 
 <hr/>
+<h3>New Example</h3>
+<label for="title">Title</label>
+<input id="title" bind:value={title}>
+<br/>
+<textarea id="text" cols=80 rows=8 placeholder="text" bind:value={text}></textarea>
+<br/>
+<button on:click={save}>Save to GitHub</button>
 
-<h2>My NoDB</h2>
-
-<ul>
-</ul>
+<hr/>
+<h3>Examples on GitHub</h3>
+<dl>
+{#each examples as example}
+	<dt>{example.title}</dt>
+	<dd>{example.text}</dd>
+{/each}
+</dl>
