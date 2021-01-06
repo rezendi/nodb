@@ -7,7 +7,8 @@
 </script>
 
 <script lang="ts">
-	export let examples, session;
+	export let examples: [{ [slug: string]: string}];
+	export let session;
 	let user = session.sUser;
 
 	import firebase from 'firebase/app';
@@ -113,6 +114,6 @@
 <h2>My Examples</h2>
 <ul>
 {#each examples as example}
-	<li>{example.slug}</li>
+	<li><a href="/examples/{example.slug}">{example.slug.replace(".yaml","")}</a></li>
 {/each}
 </ul>
