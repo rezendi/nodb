@@ -1,13 +1,17 @@
 const fetch = require('node-fetch');
 const base64 = require('universal-base64');
 
+import util from "../components/util";
+
 export async function get(req, res, next) {
 	res.writeHead(200, {
 		'Content-Type': 'application/json'
 	});
 	let owner = process.env.GITHUB_ACCOUNT;
 	let repo = process.env.GITHUB_REPO;
-	let path = params.path;
+	let user = req.session.sUser;
+	let pathPrefix = user.username ? user.username : util.hash8(user.email)
+	let path = `examples/${pathPrefix}`; // hardcode 'examples' out of security paranoia
 
 	let response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
         method: 'GET',
@@ -19,8 +23,7 @@ export async function get(req, res, next) {
 	});
 	let json = await response.json();
 	let retval = json.map(entry => { return {
-		slug: entry.name.slice(0,-5),
-		sha: entry.sha
+		slug: entry.name,
 	}});
 	res.end(JSON.stringify(retval));
 }

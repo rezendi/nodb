@@ -1,6 +1,14 @@
+<script context="module" lang="ts">
+	export async function preload( page, session ) {
+		let response = await this.fetch('/my.json');
+		let examples = await response.json();
+        return { examples: examples, session:session }
+    }
+</script>
+
 <script lang="ts">
-    import { stores } from '@sapper/app';
-	const { session } = stores();
+	export let examples, session;
+	let user = session.sUser;
 
 	import firebase from 'firebase/app';
 	import 'firebase/auth';
@@ -19,7 +27,6 @@
 			result = await firebase.auth().currentUser.linkWithPopup(provider);
 			firebase.auth().currentUser.reload();
 			location.href = "/";
-			// console.log("result", result);
 		} catch(error) {
 			console.log('link error code', error.code);
 			console.log('link error message', error.message);
@@ -43,12 +50,6 @@
 		}
 		await firebase.auth().currentUser.unlink(provider.providerId);
 		firebase.auth().currentUser.reload();
-		let response =  await fetch('/linkUser.json', {
-			method: 'DELETE',
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({site})
-		});
-		let json = await response.json();
 		alert("Unlinked");
 		firebase.auth().signOut();
 		location.href = "/";
@@ -61,29 +62,17 @@
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({title:title,text:text})
 		});
-		console.log("save", response);
-		title = '';
-		text = '';
-	}
-
-	let examples = [];
-	async function getExamples() {
-		let response = await fetch('/all.json');
 		let json = await response.json();
-		examples = json.examples;
-
+		console.log("save", json);
+		if (json.success) {
+			alert("saved!");
+			title = '';
+			text = '';
+		} else {
+			alert("save error!");
+		}
 	}
 
-    let identities = [];
-    import { onMount } from 'svelte';
-    onMount(async () => {
-		if (!$session.sUser.uid) {
-			return location.href = "/";
-		}
-		identities = $session.sUser.identities || [];
-		getExamples();
-		// console.log("identities", identities);
-	});
 </script>
 
 <svelte:head>
@@ -92,20 +81,20 @@
 
 <h2>My Account</h2>
 
-<b>Name</b> {$session.sUser.name}
-<b>Email</b> {$session.sUser.email}
-<b>GitHub</b> {$session.sUser.github || 'n/a'}
+<b>Name</b> {user.name}
+<b>Email</b> {user.email}
+<b>GitHub</b> {user.github || 'n/a'}
 
-{#if identities.includes("google.com")}
-	{#if identities.includes("github.com")}
+{#if user.identities.includes("google.com")}
+	{#if user.identities.includes("github.com")}
 		<button style="float:right;" on:click={unlinkGitHub}>Unlink GitHub</button>
 	{:else}
 		<button style="float:right;" on:click={linkGitHub}>Link GitHub</button>
 	{/if}
 {/if}
 
-{#if identities.includes("github.com")}
-	{#if identities.includes("google.com")}
+{#if user.identities.includes("github.com")}
+	{#if user.identities.includes("google.com")}
 		<button style="float:right;" on:click={unlinkGoogle}>Unlink Google</button>
 	{:else}
 		<button style="float:right;" on:click={linkGoogle}>Link Google</button>
@@ -121,11 +110,9 @@
 <br/>
 <button on:click={save}>Save to GitHub</button>
 
-<hr/>
-<h3>Examples on GitHub</h3>
-<dl>
+<h2>My Examples</h2>
+<ul>
 {#each examples as example}
-	<dt>{example.title}</dt>
-	<dd>{example.text}</dd>
+	<li>{example.slug}</li>
 {/each}
-</dl>
+</ul>

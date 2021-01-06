@@ -29,7 +29,7 @@ polka()
 		sirv('static', { dev: process.env.NODE_ENV === 'development' }),
 		sapper.middleware({
 			session: (req, res) => {
-				return { sUser: req.session.sUser || {} };
+				return { sUser: req.session.sUser || {} && (true || console.log(req.session.sUser)) };
 			}
 		}),
 	)

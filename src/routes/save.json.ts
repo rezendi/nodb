@@ -4,7 +4,7 @@ const base64 = require('universal-base64');
 
 import util from "../components/util";
 
-	export async function post(req, res, next) {
+export async function post(req, res, next) {
 	console.log("saving");
 	res.writeHead(200, {
 		'Content-Type': 'application/json'
@@ -17,30 +17,31 @@ import util from "../components/util";
 		let owner = process.env.GITHUB_ACCOUNT;
 		let repo = process.env.GITHUB_REPO;
 		let user = req.session.sUser;
-		console.log("user", user.email);
 		let pathPrefix = user.username ? user.username : util.hash8(user.email)
-		let path = `lines/${pathPrefix}/${data.slug}.yaml`;
+		let path = `examples/${pathPrefix}/${data.slug}.yaml`; // hardcode 'examples' out of security paranoia
+		let api_url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
 
 		let toPut = {
-			message: "Scryline update",
+			message: "NoDB update",
 			content: base64.encode(yamlData),
 		};
 
-		let originalSlug = '';
-		let doRename = false;
-		if (data.originalTitle) {
-			originalSlug = util.slugize(data.originalTitle);
-			doRename = originalSlug != data.slug;
-			console.log("doRename", originalSlug);
-		}
-		if (!doRename) {
-			if (data.sha && data.sha.length > 0) {
-				toPut['sha'] = data.sha;
-			}
+		// do a GET to see if a sha exists, in which case this is an update
+		let getResponse = await fetch(api_url, {
+			method: 'GET',
+			headers: {
+				"Content-Type": "application/json",
+				"Accept": "application/vnd.github.v3+json",
+				"Authorization": `Basic ${base64.encode(`${owner}:${process.env.GITHUB_TOKEN}`)}`
+			},
+		});
+		let getJson = await getResponse.json();
+		if (getJson.sha && getJson.sha.length > 0) {
+			toPut['sha'] = getJson.sha;
 		}
 
 		// console.log("posting to GH", toPut);
-		let response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+		let response = await fetch(api_url, {
 			method: 'PUT',
 			headers: {
 				"Content-Type": "application/json",
@@ -54,25 +55,6 @@ import util from "../components/util";
 			console.log("gh json", json);
 			json.success = false;
 			json.error = "GH: " + json.message;
-			doRename = false;
-		}
-
-		if (doRename) {
-			let toDelete = {
-				message: "Scryline file rename",
-				sha: data.sha,
-			};
-			let dPath = `lines/${pathPrefix}/${originalSlug}.yaml`;
-			let dResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${dPath}`, {
-				method: 'DELETE',
-				headers: {
-					"Content-Type": "application/json",
-					"Accept": "application/vnd.github.v3+json",
-					"Authorization": `Basic ${base64.encode(`${owner}:${process.env.GITHUB_TOKEN}`)}`
-				},
-				body: JSON.stringify(toDelete)
-			});
-			let dJSON = await dResponse.json();
 		}
 
 		json.path = pathPrefix;
@@ -95,9 +77,9 @@ export async function del(req, res, next) {
 		data.slug = util.slugize(data.title);
 		let user = req.session.sUser;
 		let pathPrefix = user.username ? user.username : util.hash8(user.email)
-		let path = `lines/${pathPrefix}/${data.slug}.yaml`;
+		let path = `examples/${pathPrefix}/${data.slug}.yaml`;
 		let toDel = {
-			message: "Scryline delete",
+			message: "NoDB delete",
 			sha: data.sha,
 		};
 		let response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
@@ -115,23 +97,5 @@ export async function del(req, res, next) {
 	} catch(error) {
 		console.log("save error", error);
 		res.end(JSON.stringify({success:false, data:data, error:error}));
-	}
-}
-
-export async function get(req, res, next) {
-	console.log("redirecting to repo");
-	res.writeHead(200, {
-		'Content-Type': 'application/json'
-	});
-	let params = req.query;
-	try {
-		let owner = process.env.GITHUB_ACCOUNT;
-		let repo = process.env.GITHUB_REPO;
-		let slug = util.slugize(params.title);
-		let path = params.path;
-		let url = `https://raw.githubusercontent.com/${owner}/${repo}/main/lines/${path}/${slug}.yaml`
-		res.end(JSON.stringify({success:true, url:url}));
-	} catch(error) {
-		res.end(JSON.stringify({success:false, params:params, error:error}));
 	}
 }

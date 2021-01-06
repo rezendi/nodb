@@ -25,6 +25,7 @@
 		firebase.initializeApp(firebaseConfig);
 
 		firebase.auth().onAuthStateChanged(async (user) => {
+			console.log("auth state change");
 			if (user) {
 				console.log("logging in server");
 				let token = await user.getIdToken(false)
@@ -183,7 +184,7 @@
 
 <nav>
 	<ul>
-		<li><a aria-current="{segment === undefined ? 'page' : undefined}" href=".">Home</a></li>
+		<li><a aria-current="{segment === undefined ? 'page' : undefined}" href="/">Home</a></li>
 		<li><a aria-current="{segment === 'about' ? 'page' : undefined}" href="about">About</a></li>
 		<li class="spacer">&nbsp;</li>
 		<li>
