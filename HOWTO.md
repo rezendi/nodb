@@ -40,3 +40,19 @@ Alternately, `docker build -t nodb . && docker run -p 3000:3000 -it nodb` will r
 although note that the fully specified path for GOOGLE_APPLICATION_CREDENTIALS may vary in the container.
 
 Then simply point your browser to [localhost:3000](http://localhost:3000).
+
+## 4. Profit!
+
+Well, use, anyhow. Out of the box, you can use it to log in; link / unlink GitHub / Google accounts;
+and then, on the "My NoDB" page, store two data fields, title and text, to a YAML file in the configured
+git repo. Subsequent CRUD functionality for such files is also built in.
+
+In particular, before you even create a file yourself, you can read an existing one, because, again,
+_any_ public git repo can be a data source. For instance, you can point your browser to
+http://localhost:3000/examples/github/scryline/scrylines/examples/a25bddcd/first-test
+to view the contents of
+https://github.com/scryline/scrylines/blob/main/examples/a25bddcd/first-test.yaml
+as rendered through your own local web app.
+
+Further usage and expansion is up to the user, but the author is using it for [Scryline](https://scryline.com/).
+
