@@ -4,7 +4,7 @@ A working template for a Svelte / Sapper web app which uses GitHub as
 the back end and Firebase for authentication. HOWTO configure and run it
 is [here](./HOWTO.md).
 
-The "NoDB" name is a bit extreme. In practice, a site would maintain it own
+The "NoDB" name is a bit extreme. In practice a site would maintain its own
 database (or use a cloud DB such as Firebase's) for indexing, processing,
 performance, etc. But this template shows a database isn't actually
 _necessary_. 
