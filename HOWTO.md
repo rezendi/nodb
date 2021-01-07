@@ -1,6 +1,6 @@
 # HOWTO get the NoDB template site running
 
-## 1. Set up Firebase and GitHub auth.
+## 1. Set up Firebase and GitHub authentication
 
 * Create a Firebase project and enable Google and GitHub authentication.
 * Populate the firebaseConfig object in [components/Nav.svelte](./src/components/Nav.svelte), per [Firebase's documentation](https://firebase.google.com/docs/web/setup?authuser=0)
@@ -8,8 +8,6 @@
 * Configure Firebase for your GitHub app per [Firebase's documentation](https://firebase.google.com/docs/auth/web/github-auth?authuser=0)
 
 ## 2. Add credentials to .env
-
-Mostly this is straightforward, but you will need Firebase and GitHub credentials.
 
 All credentials should go in a `.env` file in the root directory. There are five variables:
 

@@ -92,7 +92,7 @@
 			console.log('auth error email', error.email);
 			console.log('auth error credential', error.credential);
 			if (error.code=="auth/account-exists-with-different-credential") {
-				alert(`An account already exists with the email address ${error.email} -- log in the other way and then link your ${site} account from My Scrylines`);
+				alert(`An account already exists with the email address ${error.email} -- log in the other way and then link your ${site} account from My NoDB`);
 			} else {
 				alert(`Signin error: ${error.message}`);
 			}
