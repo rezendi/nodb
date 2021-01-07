@@ -13,14 +13,15 @@
 	import { onMount } from 'svelte';
 	onMount(async () => {
 		var firebaseConfig = {
-			apiKey: "AIzaSyC0pWxpoHg9YahhjASvv2RSsM-o43bcyXk",
-			authDomain: "scryliner.firebaseapp.com",
-			databaseURL: "https://scryliner.firebaseio.com",
-			projectId: "scryliner",
-			storageBucket: "scryliner.appspot.com",
-			messagingSenderId: "350222598486",
-			appId: "1:350222598486:web:e35a87ad9b4c03774ad6f7",
-			measurementId: "G-7KHLE3WKF1"
+			// TODO: Firebase config goes here
+			apiKey: "",
+			authDomain: "",
+			databaseURL: "",
+			projectId: "",
+			storageBucket: "",
+			messagingSenderId: "",
+			appId: "",
+			measurementId: ""
 		};
 		firebase.initializeApp(firebaseConfig);
 
