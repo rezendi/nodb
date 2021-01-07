@@ -22,8 +22,11 @@ export async function get(req, res, next) {
 		},
 	});
 	let json = await response.json();
-	let retval = json.map(entry => { return {
-		slug: entry.name.replace(".yaml", ""),
-	}});
+	var retval = [];
+	if (json.message != "Not Found") {
+		retval = json.map(entry => { return {
+			slug: entry.name.replace(".yaml", ""),
+		}});
+	}
 	res.end(JSON.stringify(retval));
 }

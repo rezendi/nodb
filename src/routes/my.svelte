@@ -58,6 +58,7 @@
 	
 	let title, text;
 	async function save() {
+		document.getElementById("save").innerHTML = "Saving...";
 		let response =  await fetch('/save.json', {
 			method: 'POST',
 			headers: { "Content-Type": "application/json" },
@@ -65,13 +66,24 @@
 		});
 		let json = await response.json();
 		console.log("save", json);
+		document.getElementById("save").innerHTML = "Save to GitHub";
 		if (json.success) {
 			alert("saved!");
-			title = '';
-			text = '';
+			window.location.reload();
 		} else {
 			alert("save error!");
 		}
+	}
+
+	async function doDelete(event) {
+		let response =  await fetch('/save.json', {
+			method: 'DELETE',
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({slug:event.target.id})
+		});
+		let json = await response.json();
+		console.log("delete", json);
+		window.location.reload();
 	}
 
 </script>
@@ -98,7 +110,7 @@
 	{#if user.identities.includes("google.com")}
 		<button style="float:right;" on:click={unlinkGoogle}>Unlink Google</button>
 	{:else}
-		<button style="float:right;" on:click={linkGoogle}>Link Google</button>
+	<button style="float:right;" on:click={linkGoogle}>Link Google</button>
 	{/if}
 {/if}
 
@@ -109,11 +121,11 @@
 <br/>
 <textarea id="text" cols=80 rows=8 placeholder="text" bind:value={text}></textarea>
 <br/>
-<button on:click={save}>Save to GitHub</button>
+<button id="save" on:click={save}>Save to GitHub</button>
 
 <h2>My Examples</h2>
 <ul>
 {#each examples as example}
-	<li><a href="/examples/{example.slug}">{example.slug}</a></li>
+	<li><a href="/examples/{example.slug}">{example.slug}</a> <button id={example.slug} style="float:right;" on:click={doDelete}>🗑️</button></li>
 {/each}
 </ul>
