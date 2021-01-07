@@ -23,7 +23,7 @@ export async function get(req, res, next) {
 	});
 	let json = await response.json();
 	let retval = json.map(entry => { return {
-		slug: entry.name,
+		slug: entry.name.replace(".yaml", ""),
 	}});
 	res.end(JSON.stringify(retval));
 }

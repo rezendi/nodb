@@ -114,6 +114,6 @@
 <h2>My Examples</h2>
 <ul>
 {#each examples as example}
-	<li><a href="/examples/{example.slug}">{example.slug.replace(".yaml","")}</a></li>
+	<li><a href="/examples/{example.slug}">{example.slug}</a></li>
 {/each}
 </ul>

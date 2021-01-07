@@ -1,19 +1,19 @@
 <script context="module" lang="ts">
 	export async function preload( { params }, session ) {
 
-    let response, path, slug;
+    console.log("slug", params);
+    let response;
     if (params.slug.length > 2 && params.slug[0]=="github") {
       console.log("github", params);
-      path = params.slug.splice(1).join("/");
-      response = await this.fetch(`${path}.json`);
+      let path = params.slug.splice(1).join("/");
+      response = await this.fetch(`/examples/${path}.json`);
     } else {
-      [path, slug] = params.slug;
-      response = await this.fetch(`${path}/${slug}.json`);
+      response = await this.fetch(`/examples/${params.slug}.json`);
     }
     const data = await response.json();
 
 		if (response.status === 200 && data.success) {
-      return { vals:data, path:path}
+      return { vals:data.example }
 		} else {
 			this.error(response.status, data.error);
 		}
@@ -21,9 +21,12 @@
 </script>
 
 <script lang="ts">
-  export let path, vals;
+  export let vals;
 </script>
 
 <div class="page">
-  {JSON.stringify(vals)}
+  <dl>
+    <dt><b>Title</b> { vals.title }</dt>
+    <dd><b>Text</b> { vals.text }</dd>
+  </dl>
 </div>

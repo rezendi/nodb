@@ -59,7 +59,7 @@ export async function post(req, res, next) {
 
 		json.path = pathPrefix;
 		console.log("saved", pathPrefix);
-		res.end(JSON.stringify(json));
+		res.end(JSON.stringify({json, ...{ success: true}}));
 	} catch(error) {
 		res.end(JSON.stringify({success:false, data:data, error:error}));
 	}
