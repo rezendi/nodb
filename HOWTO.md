@@ -18,7 +18,7 @@ So an example `.env` would look like:
 GITHUB_ACCOUNT=myaccount
 GITHUB_REPO=my-repo
 GITHUB_TOKEN=0987poiu0987poiu0987poiu0987poiu0987poiu
-GOOGLE_APPLICATION_CREDENTIALS=/Home/scryline/firebase.json
+GOOGLE_APPLICATION_CREDENTIALS=/Home/nodb/firebase.json
 SESSION_SECRET=1234zxcv
 ```
 
