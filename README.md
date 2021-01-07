@@ -42,6 +42,7 @@ can also move from one data bank to another with ease.
 
 I call this the "self-hosted data" model. It's pretty surprising that I can't
 think of any other sites/services which use it. There's Blockstack... but
-there's zero reason for any cryptocurrency here. For-profit companies are
-obviously opposed to anything which crumbles the moat that keeps users with
-them, but even open-source / nonprofit organizations don't seem to do it.
+there's zero reason for any cryptocurrency here. (Maybe somewhere down the
+road.) For-profit companies are obviously opposed to anything which crumbles
+the moat that keeps users with them, but even open-source / nonprofit
+organizations don't seem to do it.
