@@ -53,6 +53,6 @@ http://localhost:3000/examples/github/scryline/scrylines/examples/a25bddcd/first
 to view the contents of
 https://github.com/scryline/scrylines/blob/main/examples/a25bddcd/first-test.yaml
 as rendered through your own local web app.
+(You can do this even if Firebase is not yet configured; no authentication is required.)
 
-Further usage and expansion is up to the user, but the author is using it for [Scryline](https://scryline.com/).
-
+Further usage and expansion is up to the user, but the author is using it for [Scryline](https://www.scryline.com/).
