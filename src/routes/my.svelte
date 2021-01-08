@@ -27,13 +27,23 @@
 		try {
 			result = await firebase.auth().currentUser.linkWithPopup(provider);
 			firebase.auth().currentUser.reload();
-			location.href = "/";
 		} catch(error) {
 			console.log('link error code', error.code);
 			console.log('link error message', error.message);
 			console.log('link error email', error.email);
 			console.log('link error credential', error.credential);
 			return alert(`Account link error: ${error.message}`);
+		}
+		let response =  await fetch('/linkUser.json', {
+			method: 'POST',
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({result, ...{site:site}})
+		});
+		let json = await response.json();
+		if (json.success === false) {
+			alert("Link user error");
+		} else {
+			location.href = "/";
 		}
 	}
 
@@ -51,6 +61,12 @@
 		}
 		await firebase.auth().currentUser.unlink(provider.providerId);
 		firebase.auth().currentUser.reload();
+		let response =  await fetch('/linkUser.json', {
+			method: 'DELETE',
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({site})
+		});
+		let json = await response.json();
 		alert("Unlinked");
 		firebase.auth().signOut();
 		location.href = "/";
