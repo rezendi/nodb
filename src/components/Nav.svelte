@@ -99,16 +99,6 @@
 		}
 	}
 
-	async function loginTestMode() {
-		let response =  await fetch('/test.json', {
-			method: 'POST',
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ login:true })
-		});
-		loggedIn=true;
-		console.log("login with test mode");
-	}
-
 	function goToMy() {
 		location.href = "/my";
 	}
@@ -116,10 +106,6 @@
 	function logout() {
 		firebase.auth().signOut();
 		location.href = "/";
-	}
-
-	function newLine() {
-		window.location.href="/lines/new";
 	}
 
 </script>
