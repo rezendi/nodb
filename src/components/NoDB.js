@@ -7,6 +7,28 @@ function slugize(str, locale) {
     return slugify (str, { lower: true, strict: true, locale: locale || 'en'} );
 }
 
+export async function get(args) {
+    // Note that here, "contents" is expected in the args path, so we can use any file in any public repo
+    let slug = slugize(args.title, args.locale );
+	let api_url = `https://api.github.com/repos/${args.owner}/${args.repo}/${args.path}/${slug}.yaml`;
+	try {
+		let response = await fetch(api_url, {
+			method: 'GET',
+			headers: {
+				"Content-Type": "application/json",
+				"Accept": "application/vnd.github.v3+json",
+				"Authorization": `Basic ${base64.encode(`${args.owner}:${args.auth}`)}`
+			},
+		});
+		let json = await response.json();
+		let converted = base64.decode(json.content);
+		let retval = yaml.safeLoad(converted);
+        return { retval, ...{ sha: json.sha, gh: json, success: true }};
+	} catch(error) {
+		return { success:false, args:args, error:error };
+	}
+}
+
 // args: auth, owner, repo, branch, prefix, title, sha, oldTitle, message, committer, locale='en'
 async function save(data, args) {
     try {
@@ -63,7 +85,7 @@ async function save(data, args) {
         // TODO: 1-commit renames https://medium.com/@obodley/renaming-a-file-using-the-git-api-fed1e6f04188
         let ghd = null;
         if (doRename) { 
-            let ghd = del({
+            ghd = del({
                 auth: args.auth,
                 owner: args.owner,
                 repo: args.repo,
@@ -76,7 +98,7 @@ async function save(data, args) {
             });
         }
 
-        return { success: success, gh:gh, ghd:ghd };
+        return { json, ...{success: success, ghd: ghd} };
 	} catch(error) {
 		return { success:false, args:args, error:error };
 	}
@@ -96,8 +118,8 @@ async function del(args) {
 				method: 'DELETE',
 				headers: headers
 			});
-			let gh = await response.json();
-			return {success:response.status==204, gh:gh};
+			let json = await response.json();
+			return { json, ...{ success:response.status==204} };
 		}
 
         // if wer'e here, we're deleting an individual file
@@ -126,8 +148,8 @@ async function del(args) {
 			headers: headers,
 			body: JSON.stringify(toDel)
 		});
-		let gh = await response.json();
-        return { success: success, gh:gh };
+		let json = await response.json();
+        return { json, ...{ success: success } };
 	} catch(error) {
 		return { success:false, args:args, error:error };
 	}
@@ -135,6 +157,7 @@ async function del(args) {
 
 
 export default {
+    get: get,
     save: save,
-    del: del
+    del: del,
 }
