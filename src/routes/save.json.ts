@@ -2,67 +2,28 @@ const yaml = require('js-yaml');
 const fetch = require('node-fetch');
 const base64 = require('universal-base64');
 
+import NoDB from '../components/NoDB';
 import util from "../components/util";
 
+// Save file to GitHub
 export async function post(req, res, next) {
 	console.log("saving");
-	res.writeHead(200, {
-		'Content-Type': 'application/json'
-	});
+	let user = req.session.sUser;
+	// Hardcode "examples" in he path out of mild security paranoia.
+	let prefix = "examples/" + user.username ? user.username : util.hash8(user.email);
 	let data = req.body;
-	try {
-		data.slug = util.slugize(data.title);
-		let yamlData = yaml.safeDump(data, {skipInvalid:true});
-
-		let owner = process.env.GITHUB_ACCOUNT;
-		let repo = process.env.GITHUB_REPO;
-		let user = req.session.sUser;
-		let pathPrefix = user.username ? user.username : util.hash8(user.email)
-		let path = `examples/${pathPrefix}/${data.slug}.yaml`; // hardcode 'examples' out of security paranoia
-		let api_url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
-
-		let toPut = {
-			message: "NoDB update",
-			content: base64.encode(yamlData),
-		};
-
-		// do a GET to see if a sha exists, in which case this is an update
-		let getResponse = await fetch(api_url, {
-			method: 'GET',
-			headers: {
-				"Content-Type": "application/json",
-				"Accept": "application/vnd.github.v3+json",
-				"Authorization": `Basic ${base64.encode(`${owner}:${process.env.GITHUB_TOKEN}`)}`
-			},
-		});
-		let getJson = await getResponse.json();
-		if (getJson.sha && getJson.sha.length > 0) {
-			toPut['sha'] = getJson.sha;
-		}
-
-		// console.log("posting to GH", toPut);
-		let response = await fetch(api_url, {
-			method: 'PUT',
-			headers: {
-				"Content-Type": "application/json",
-				"Accept": "application/vnd.github.v3+json",
-				"Authorization": `Basic ${base64.encode(`${owner}:${process.env.GITHUB_TOKEN}`)}`
-			},
-			body: JSON.stringify(toPut)
-		});
-		let json = await response.json();
-		if (json.message && json.message.length > 0) {
-			console.log("gh json", json);
-			json.success = false;
-			json.error = "GH: " + json.message;
-		}
-
-		json.path = pathPrefix;
-		console.log("saved", pathPrefix);
-		res.end(JSON.stringify({json, ...{ success: true}}));
-	} catch(error) {
-		res.end(JSON.stringify({success:false, data:data, error:error}));
-	}
+	let args = {
+		auth: process.env.GITHUB_TOKEN,
+		owner: process.env.GITHUB_ACCOUNT,
+		repo: process.env.GITHUB_REPO,
+		prefix: prefix,
+		branch: data.branch,
+		sha: data.sha,
+		message: "NoDB update",
+		title: data.title,
+	};
+	let retval = NoDB.save(data, args);
+	res.end(JSON.stringify(retval));
 }
 
 export async function del(req, res, next) {
