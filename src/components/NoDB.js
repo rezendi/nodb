@@ -7,7 +7,7 @@ function slugize(str, locale) {
     return slugify (str, { lower: true, strict: true, locale: locale || 'en'} );
 }
 
-export async function save(data, args) {
+async function save(data, args) {
     try {
         // auth, owner, repo, branch, path, title, sha, oldTitle, message, committer, locale='en'
         let slug = slugize(args.title, args.locale );
@@ -88,4 +88,14 @@ export async function save(data, args) {
 	} catch(error) {
 		return {success:false, args:args, error:error};
 	}
+}
+
+async function del(data, args) {
+
+}
+
+
+export default {
+    save: save,
+    del: del
 }
